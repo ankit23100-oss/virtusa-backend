@@ -4,7 +4,7 @@ module.exports = {
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "varta123",
 
   // Groq API Details
-  GROQ_MODEL: "llama-3.3-70b-versatile", // High quality, fast conversational model
+  GROQ_MODEL: "llama-4-scout", // High quality, fast conversational model
 
   // AI Assistant System Prompt and Product Specifications (Training Data)
   // This is customized specifically for @TheShivanshVasu's learning ecosystem.
