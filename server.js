@@ -55,10 +55,28 @@ if (!groqApiKey) {
 const groq = new Groq({ apiKey: groqApiKey || 'placeholder_key' });
 
 // Connect to MongoDB Database
-const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/varta_assistant';
-mongoose.connect(mongoUri)
-  .then(() => console.log('Successfully connected to MongoDB.'))
-  .catch(err => console.error('MongoDB connection failure:', err));
+// const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/varta_assistant';
+// mongoose.connect(mongoUri)
+//   .then(() => console.log('Successfully connected to MongoDB.'))
+//   .catch(err => console.error('MongoDB connection failure:', err));
+const connectDB = async () => {
+  try {
+    if (mongoose.connection.readyState === 1) {
+      return;
+    }
+
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is not defined");
+    }
+
+    await mongoose.connect(process.env.MONGO_URI);
+
+    console.log("Successfully connected to MongoDB.");
+  } catch (error) {
+    console.error("MongoDB connection failure:", error);
+    throw error;
+  }
+};
 
 // ==========================================
 // WIDGET ENDPOINTS (VISITOR ACTIONS)
@@ -74,6 +92,7 @@ app.post('/api/widget/onboard', async (req, res) => {
   console.log(`[WIDGET] [ONBOARD] Request received to onboard visitor: "${name}" (${profession}) | Goal: "${goal}"`);
 
   try {
+    await connectDB();
     if (!name || !profession || !goal) {
       console.warn(`[WIDGET] [ONBOARD] [BAD REQUEST] Missing onboarding fields.`);
       return res.status(400).json({ error: 'Name, profession, and goal are all required.' });
